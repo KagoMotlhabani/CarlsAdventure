@@ -11,7 +11,8 @@ public class PlayerMovement : MonoBehaviour
     public Transform cameraTransform;    // Reference to the camera for direction
 
     private Rigidbody rb;                // Reference to the Rigidbody
-    private bool isGrounded = true;      // Check if the player is on the ground
+    [SerializeField] private bool isGrounded = true; 
+    [SerializeField]bool isRunning;     // Check if the player is on the ground
     private Animator animator;           // Reference to the Animator
 
     void Start()
@@ -21,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         // Get input for movement
         float moveX = Input.GetAxis("Horizontal");  // A/D or Left/Right arrow keys
@@ -42,17 +43,28 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Update the animator state for running
-        bool isRunning = moveX != 0 || moveZ != 0;
+        isRunning = moveX != 0 || moveZ != 0;
         animator.SetBool("isRunning", isRunning);
 
         // Jumping logic
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
+            Debug.Log($"Jumping");
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             animator.SetBool("isJumping", true);
             animator.SetBool("isGrounded", false);
             isGrounded = false;
         }
+/*
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            Debug.Log($"Jumping");
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            animator.SetBool("isJumping", true);
+            animator.SetBool("isGrounded", false);
+            isGrounded = false;
+        }
+*/
 
         // Apply better jump logic for falling and low jump control
         if (rb.velocity.y < 0)  // Falling
